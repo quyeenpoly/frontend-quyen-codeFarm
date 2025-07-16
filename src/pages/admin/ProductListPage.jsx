@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, message, Popconfirm, Select, Tooltip } from "antd";
+import { Table, Button, Modal, Form, Input, Space, message, Popconfirm, Select, Tooltip, Card } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -124,16 +124,15 @@ const ProductListPage = () => {
       title: "Ảnh",
       dataIndex: "thumbnail",
       key: "thumbnail",
-      width: 80,
+      width: 70,
       render: (url) => url ? (
-        <img src={url} alt="thumb" style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, boxShadow: '0 2px 8px #eee' }} />
+        <img src={url} alt="thumb" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6, boxShadow: '0 2px 8px #eee' }} />
       ) : null,
     },
     {
       title: "Tên sản phẩm",
       dataIndex: "title",
       key: "title",
-      width: 180,
       ellipsis: true,
       render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
@@ -141,14 +140,12 @@ const ProductListPage = () => {
       title: "Giá (VNĐ)",
       dataIndex: "priceDefault",
       key: "priceDefault",
-      width: 120,
       render: (price) => price ? price.toLocaleString() : '',
     },
     {
       title: "Mô tả ngắn",
       dataIndex: "shortDescription",
       key: "shortDescription",
-      width: 200,
       ellipsis: true,
       render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
@@ -156,7 +153,6 @@ const ProductListPage = () => {
       title: "Slug",
       dataIndex: "slug",
       key: "slug",
-      width: 140,
       ellipsis: true,
       render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
@@ -164,37 +160,20 @@ const ProductListPage = () => {
       title: "Thương hiệu",
       dataIndex: "brandId",
       key: "brandId",
-      width: 120,
       render: (brand) => brand?.title || brands.find(b => b._id === brand)?.title || "",
     },
     {
       title: "Danh mục con",
       dataIndex: "subCategoryId",
       key: "subCategoryId",
-      width: 140,
       render: (sub) => sub?.title || subCategories.find(s => s._id === sub)?.title || "",
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      width: 140,
-      render: (text) => text ? new Date(text).toLocaleString() : '',
-    },
-    {
-      title: "Ngày cập nhật",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      width: 140,
-      render: (text) => text ? new Date(text).toLocaleString() : '',
     },
     {
       title: "Hành động",
       key: "action",
-      fixed: 'right',
-      width: 160,
+      width: 110,
       render: (_, record) => (
-        <Space>
+        <Space size="small">
           <Button type="link" onClick={() => openModal(record)}>Sửa</Button>
           <Popconfirm
             title="Bạn có chắc muốn xóa sản phẩm này?"
@@ -211,22 +190,25 @@ const ProductListPage = () => {
   ];
 
   return (
-    <div style={{ maxWidth: 1300, margin: "40px auto", padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 12px #eee' }}>
-      <h2 style={{ marginBottom: 24, fontWeight: 700, color: '#1677ff' }}>Quản lý sản phẩm</h2>
-      <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 20 }}>
-        Thêm sản phẩm
-      </Button>
-      <div style={{ overflowX: 'auto' }}>
+    <div style={{ maxWidth: 1000, margin: "40px auto", padding: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <h2 style={{ fontWeight: 700, color: '#1677ff', margin: 0 }}>Quản lý sản phẩm</h2>
+        <Button type="primary" onClick={() => openModal()}>
+          Thêm sản phẩm
+        </Button>
+      </div>
+      <Card bordered={false} style={{ borderRadius: 10, boxShadow: '0 2px 12px #eee', padding: 0 }}>
         <Table
           columns={columns}
           dataSource={products}
           rowKey="_id"
           loading={loading}
           bordered
-          scroll={{ x: 1200 }}
+          pagination={{ pageSize: 10, showSizeChanger: false }}
           size="middle"
+          style={{ background: 'white' }}
         />
-      </div>
+      </Card>
       <Modal
         title={editingProduct ? "Sửa sản phẩm" : "Thêm sản phẩm"}
         open={modalVisible}
