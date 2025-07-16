@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, message, Popconfirm, Select } from "antd";
+import { Table, Button, Modal, Form, Input, Space, message, Popconfirm, Select, Tooltip } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -124,57 +124,75 @@ const ProductListPage = () => {
       title: "Ảnh",
       dataIndex: "thumbnail",
       key: "thumbnail",
-      render: (url) => url ? <img src={url} alt="thumb" style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6 }} /> : null,
+      width: 80,
+      render: (url) => url ? (
+        <img src={url} alt="thumb" style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, boxShadow: '0 2px 8px #eee' }} />
+      ) : null,
     },
     {
       title: "Tên sản phẩm",
       dataIndex: "title",
       key: "title",
+      width: 180,
+      ellipsis: true,
+      render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
     {
       title: "Giá (VNĐ)",
       dataIndex: "priceDefault",
       key: "priceDefault",
+      width: 120,
       render: (price) => price ? price.toLocaleString() : '',
     },
     {
       title: "Mô tả ngắn",
       dataIndex: "shortDescription",
       key: "shortDescription",
+      width: 200,
       ellipsis: true,
+      render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
     {
       title: "Slug",
       dataIndex: "slug",
       key: "slug",
+      width: 140,
+      ellipsis: true,
+      render: (text) => <Tooltip title={text}>{text}</Tooltip>,
     },
     {
       title: "Thương hiệu",
       dataIndex: "brandId",
       key: "brandId",
+      width: 120,
       render: (brand) => brand?.title || brands.find(b => b._id === brand)?.title || "",
     },
     {
       title: "Danh mục con",
       dataIndex: "subCategoryId",
       key: "subCategoryId",
+      width: 140,
       render: (sub) => sub?.title || subCategories.find(s => s._id === sub)?.title || "",
     },
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
       key: "createdAt",
+      width: 140,
       render: (text) => text ? new Date(text).toLocaleString() : '',
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updatedAt",
       key: "updatedAt",
+      width: 140,
       render: (text) => text ? new Date(text).toLocaleString() : '',
     },
     {
       title: "Hành động",
       key: "action",
+      fixed: 'right',
+      width: 160,
       render: (_, record) => (
         <Space>
           <Button type="link" onClick={() => openModal(record)}>Sửa</Button>
@@ -186,25 +204,29 @@ const ProductListPage = () => {
           >
             <Button type="link" danger>Xóa</Button>
           </Popconfirm>
-          <Link to={`/admin/products/detail/${record._id}`}><Button type="link">Xem</Button></Link>
+          <Link to={`/admin/products/${record._id}`}><Button type="link">Xem</Button></Link>
         </Space>
       ),
     },
   ];
 
   return (
-    <div style={{ maxWidth: 1200, margin: "40px auto" }}>
-      <h2>Quản lý sản phẩm</h2>
-      <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 16 }}>
+    <div style={{ maxWidth: 1300, margin: "40px auto", padding: 24, background: '#fff', borderRadius: 8, boxShadow: '0 2px 12px #eee' }}>
+      <h2 style={{ marginBottom: 24, fontWeight: 700, color: '#1677ff' }}>Quản lý sản phẩm</h2>
+      <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 20 }}>
         Thêm sản phẩm
       </Button>
-      <Table
-        columns={columns}
-        dataSource={products}
-        rowKey="_id"
-        loading={loading}
-        bordered
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <Table
+          columns={columns}
+          dataSource={products}
+          rowKey="_id"
+          loading={loading}
+          bordered
+          scroll={{ x: 1200 }}
+          size="middle"
+        />
+      </div>
       <Modal
         title={editingProduct ? "Sửa sản phẩm" : "Thêm sản phẩm"}
         open={modalVisible}
@@ -212,6 +234,8 @@ const ProductListPage = () => {
         onCancel={() => { setModalVisible(false); setEditingProduct(null); }}
         okText={editingProduct ? "Lưu" : "Thêm"}
         cancelText="Hủy"
+        width={600}
+        bodyStyle={{ padding: 24 }}
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -219,47 +243,47 @@ const ProductListPage = () => {
             name="title"
             rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
           >
-            <Input />
+            <Input placeholder="Nhập tên sản phẩm" />
           </Form.Item>
           <Form.Item
             label="Giá (VNĐ)"
             name="priceDefault"
             rules={[{ required: true, message: "Vui lòng nhập giá" }]}
           >
-            <Input type="number" min={0} />
+            <Input type="number" min={0} placeholder="Nhập giá sản phẩm" />
           </Form.Item>
           <Form.Item
             label="Ảnh (URL)"
             name="thumbnail"
             rules={[{ required: true, message: "Vui lòng nhập link ảnh" }]}
           >
-            <Input />
+            <Input placeholder="Dán link ảnh sản phẩm" />
           </Form.Item>
           <Form.Item
             label="Mô tả ngắn"
             name="shortDescription"
           >
-            <Input />
+            <Input placeholder="Nhập mô tả ngắn" />
           </Form.Item>
           <Form.Item
             label="Mô tả"
             name="description"
           >
-            <Input.TextArea rows={3} />
+            <Input.TextArea rows={3} placeholder="Nhập mô tả chi tiết" />
           </Form.Item>
           <Form.Item
             label="Slug"
             name="slug"
             rules={[{ required: true, message: "Vui lòng nhập slug" }]}
           >
-            <Input />
+            <Input placeholder="Nhập slug (không dấu, không cách)" />
           </Form.Item>
           <Form.Item
             label="Thương hiệu"
             name="brandId"
             rules={[{ required: true, message: "Vui lòng chọn thương hiệu" }]}
           >
-            <Select placeholder="Chọn thương hiệu">
+            <Select placeholder="Chọn thương hiệu" showSearch optionFilterProp="children">
               {brands.map(b => (
                 <Select.Option value={b._id} key={b._id}>{b.title}</Select.Option>
               ))}
@@ -270,7 +294,7 @@ const ProductListPage = () => {
             name="subCategoryId"
             rules={[{ required: true, message: "Vui lòng chọn danh mục con" }]}
           >
-            <Select placeholder="Chọn danh mục con">
+            <Select placeholder="Chọn danh mục con" showSearch optionFilterProp="children">
               {subCategories.map(s => (
                 <Select.Option value={s._id} key={s._id}>{s.title}</Select.Option>
               ))}

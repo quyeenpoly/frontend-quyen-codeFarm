@@ -24,7 +24,7 @@ const adminRoutes = [
 	{ path: "products", element: < ProductListPage/> },
 	{ path: "products/update/:id", element: < ProductsUpdatePage/> },
 	{ path: "products/add", element: < ProductForm/> },
-	{ path: "products/detail/:id", element: < ProductDetailPage/> },
+	{ path: "products/:id", element: < ProductDetailPage/> },
 
 	// * Categories routes
 	{ path: "categories", element: <CategoryListPage /> },
