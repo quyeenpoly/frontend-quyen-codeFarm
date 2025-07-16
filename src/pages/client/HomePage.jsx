@@ -1,8 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "../../css/HomePage.css";
 
 const HomePage = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products");
+        if (res.data.success && res.data.data) {
+          setProducts(res.data.data);
+        }
+      } catch (err) {
+        console.error("Lỗi khi lấy sản phẩm:", err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   return (
     <div className="home-page">
       {/* Hero Section */}
@@ -39,134 +56,28 @@ const HomePage = () => {
       <section className="new-arrivals">
         <h2>New Arrivals</h2>
         <div className="product-grid">
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker1.jpg" alt="Product 1" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
+          {products.length === 0 ? (
+            <p>Đang tải sản phẩm...</p>
+          ) : (
+            products.map((product) => (
+              <div className="product-card" key={product._id}>
+                <div className="product-image">
+                  <img src={product.thumbnail} alt={product.title} />
+                  <div className="product-overlay">
+                    <button className="quick-view">Quick View</button>
+                  </div>
+                </div>
+                <div className="product-info">
+                  <h3>{product.title}</h3>
+                  <p className="price">{product.priceDefault.toLocaleString()}₫</p>
+                  <div className="rating">
+                    <span>★★★★★</span>
+                    <span>({product.soldCount || 0})</span>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="product-info">
-              <h3>Premium Sneaker</h3>
-              <p className="price">$29.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(120)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker2.jpg" alt="Product 2" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Classic Sneaker</h3>
-              <p className="price">$39.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(85)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker3.jpg" alt="Product 3" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Sport Sneaker</h3>
-              <p className="price">$49.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(95)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker4.jpg" alt="Product 4" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Casual Sneaker</h3>
-              <p className="price">$34.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(75)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker5.jpg" alt="Product 5" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Running Sneaker</h3>
-              <p className="price">$44.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(110)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker6.jpg" alt="Product 6" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Basketball Sneaker</h3>
-              <p className="price">$54.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(90)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker7.jpg" alt="Product 7" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Training Sneaker</h3>
-              <p className="price">$39.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(80)</span>
-              </div>
-            </div>
-          </div>
-          <div className="product-card">
-            <div className="product-image">
-              <img src="/images/sneaker8.jpg" alt="Product 8" />
-              <div className="product-overlay">
-                <button className="quick-view">Quick View</button>
-              </div>
-            </div>
-            <div className="product-info">
-              <h3>Lifestyle Sneaker</h3>
-              <p className="price">$45.99</p>
-              <div className="rating">
-                <span>★★★★★</span>
-                <span>(100)</span>
-              </div>
-            </div>
-          </div>
+            ))
+          )}
         </div>
       </section>
 
