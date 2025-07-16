@@ -3,8 +3,15 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "../../css/HomePage.css";
 
+const fakeCategoryImages = [
+  "/images/danhmuc1.jpg",
+  "/images/danhmuc2.jpg",
+  "/images/img_collection.jpg"
+];
+
 const HomePage = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -20,6 +27,20 @@ const HomePage = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/categories");
+        if (res.data.success && res.data.data) {
+          setCategories(res.data.data);
+        }
+      } catch (err) {
+        console.error("Lỗi khi lấy danh mục:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   return (
     <div className="home-page">
       {/* Hero Section */}
@@ -32,23 +53,36 @@ const HomePage = () => {
           </Link>
         </div>
       </section>
-
       {/* Featured Categories */}
       <section className="categories">
         <h2>Shop by Category</h2>
         <div className="category-grid">
-          <div className="category-card">
-            <img src="/images/danhmuc1.jpg" alt="Men's Fashion" />
-            <Link to="/shop?category=men">Shop Now</Link>
-          </div>
-          <div className="category-card">
-            <img src="/images/danhmuc2.jpg" alt="Women's Fashion" />
-            <Link to="/shop?category=women">Shop Now</Link>
-          </div>
-          <div className="category-card">
-            <img src="/images/img_collection.jpg" alt="Accessories" />
-            <Link to="/shop?category=accessories">Shop Now</Link>
-          </div>
+          {categories.length === 0 ? (
+            <>
+              <div className="category-card">
+                <img src="/images/danhmuc1.jpg" alt="Men's Fashion" />
+                <Link to="/shop?category=men">Shop Now</Link>
+              </div>
+              <div className="category-card">
+                <img src="/images/danhmuc2.jpg" alt="Women's Fashion" />
+                <Link to="/shop?category=women">Shop Now</Link>
+              </div>
+              <div className="category-card">
+                <img src="/images/img_collection.jpg" alt="Accessories" />
+                <Link to="/shop?category=accessories">Shop Now</Link>
+              </div>
+            </>
+          ) : (
+            [...categories]
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+              .slice(0, 3)
+              .map((cat, idx) => (
+                <div className="category-card" key={cat._id}>
+                  <img src={cat.image || fakeCategoryImages[idx % fakeCategoryImages.length]} alt={cat.title} />
+                  <Link to={`/shop?category=${cat.slug}`}>{cat.title}</Link>
+                </div>
+              ))
+          )}
         </div>
       </section>
 
@@ -60,22 +94,24 @@ const HomePage = () => {
             <p>Đang tải sản phẩm...</p>
           ) : (
             products.map((product) => (
-              <div className="product-card" key={product._id}>
-                <div className="product-image">
-                  <img src={product.thumbnail} alt={product.title} />
-                  <div className="product-overlay">
-                    <button className="quick-view">Quick View</button>
+              <Link to={`/products/${product._id}`} key={product._id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div className="product-card">
+                  <div className="product-image">
+                    <img src={product.thumbnail} alt={product.title} />
+                    <div className="product-overlay">
+                      <button className="quick-view">Quick View</button>
+                    </div>
+                  </div>
+                  <div className="product-info">
+                    <h3>{product.title}</h3>
+                    <p className="price">{product.priceDefault ? product.priceDefault.toLocaleString() + "₫" : ""}</p>
+                    <div className="rating">
+                      <span>★★★★★</span>
+                      <span>({product.soldCount || 0})</span>
+                    </div>
                   </div>
                 </div>
-                <div className="product-info">
-                  <h3>{product.title}</h3>
-                  <p className="price">{product.priceDefault.toLocaleString()}₫</p>
-                  <div className="rating">
-                    <span>★★★★★</span>
-                    <span>({product.soldCount || 0})</span>
-                  </div>
-                </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
