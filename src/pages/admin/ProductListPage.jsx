@@ -79,6 +79,7 @@ const ProductListPage = () => {
       // Ensure brandId and subCategoryId are string IDs
       const payload = {
         ...values,
+        priceDefault: Number(values.priceDefault), // Ensure number type
         brandId: typeof values.brandId === "object" ? values.brandId._id : values.brandId,
         subCategoryId: typeof values.subCategoryId === "object" ? values.subCategoryId._id : values.subCategoryId,
       };
