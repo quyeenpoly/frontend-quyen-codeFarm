@@ -9,8 +9,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Avatar } from "antd";
-import { Link, Outlet } from "react-router-dom";
-
+import { Link } from "react-router-dom";
+import {Outlet} from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
@@ -68,6 +68,33 @@ const AdminLayout = () => {
               ),
             },
             {
+              key: "5",
+              icon: <AppstoreOutlined />,
+              label: (
+                <Link style={{ textDecoration: "none" , color: "#ffff"}} to="/admin/categories">
+                  Danh mục
+                </Link>
+              ),
+            },
+            {
+              key: "6",
+              icon: <AppstoreOutlined />,
+              label: (
+                <Link style={{ textDecoration: "none" , color: "#ffff"}} to="/admin/sub-categories">
+                  Danh mục con
+                </Link>
+              ),
+            },
+            {
+              key: "7",
+              icon: <AppstoreOutlined />,
+              label: (
+                <Link style={{ textDecoration: "none" , color: "#ffff"}} to="/admin/brands">
+                  Quản lý brand
+                </Link>
+              ),
+            },
+            {
               key: "3",
               icon: <TeamOutlined />,
               label: (
@@ -111,7 +138,7 @@ const AdminLayout = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          <Outlet />
+          <Outlet/>
         </Content>
       </Layout>
     </Layout>

@@ -20,17 +20,17 @@ const router = createBrowserRouter([
 	},
 
 	// * Layout Admin
-	{
-		path: "/admin",
-		element: <ProtectedRoute />,
-		children: [
+	// {
+	// 	path: "/admin",
+	// 	element: <ProtectedRoute />,
+	// 	children: [
 			{
-				path: "",
+				path: "/admin",
 				element: <AdminLayout />,
 				children: adminRoutes
 			},
-		],
-	},
+		// ],
+	// },
 
 	// * Layout Empty
 	{ path: "/auth/login", element: <LoginPage /> },

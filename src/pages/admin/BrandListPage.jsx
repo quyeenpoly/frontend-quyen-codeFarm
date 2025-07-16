@@ -1,43 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Input, Space, message, Popconfirm } from "antd";
+import { Table, Button, Modal, Form, Input, Space, message, Popconfirm, Select } from "antd";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/categories";
+const API_URL = "http://localhost:5000/api/brands";
 
-const CategoryListPage = () => {
-  const [categories, setCategories] = useState([]);
+const BrandListPage = () => {
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingBrand, setEditingBrand] = useState(null);
   const [form] = Form.useForm();
 
-  // Fetch categories
-  const fetchCategories = async () => {
+  // Fetch brands
+  const fetchBrands = async () => {
     setLoading(true);
     try {
       const res = await axios.get(API_URL);
       if (res.data.success && res.data.data) {
-        setCategories(res.data.data);
+        setBrands(res.data.data);
       }
     } catch (err) {
-      message.error("Lỗi khi tải danh mục");
+      message.error("Lỗi khi tải brand");
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchBrands();
   }, []);
 
   // Open modal for create or edit
-  const openModal = (category = null) => {
-    setEditingCategory(category);
+  const openModal = (brand = null) => {
+    setEditingBrand(brand);
     setModalVisible(true);
-    if (category) {
+    if (brand) {
       form.setFieldsValue({
-        title: category.title,
-        description: category.description,
-        slug: category.slug,
+        title: brand.title,
+        description: brand.description,
+        slug: brand.slug,
+        image: brand.image,
+        status: brand.status,
       });
     } else {
       form.resetFields();
@@ -48,18 +50,18 @@ const CategoryListPage = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      if (editingCategory) {
-        await axios.patch(`${API_URL}/${editingCategory._id}`, values); // PATCH thay vì PUT
-        message.success("Cập nhật danh mục thành công");
+      if (editingBrand) {
+        await axios.patch(`${API_URL}/${editingBrand._id}`, values);
+        message.success("Cập nhật brand thành công");
       } else {
         await axios.post(API_URL, values);
-        message.success("Thêm danh mục thành công");
+        message.success("Thêm brand thành công");
       }
       setModalVisible(false);
-      setEditingCategory(null);
-      fetchCategories();
+      setEditingBrand(null);
+      fetchBrands();
     } catch (err) {
-      message.error("Lỗi khi lưu danh mục");
+      message.error("Lỗi khi lưu brand");
     }
   };
 
@@ -67,16 +69,16 @@ const CategoryListPage = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
-      message.success("Xóa danh mục thành công");
-      fetchCategories();
+      message.success("Xóa brand thành công");
+      fetchBrands();
     } catch (err) {
-      message.error("Lỗi khi xóa danh mục");
+      message.error("Lỗi khi xóa brand");
     }
   };
 
   const columns = [
     {
-      title: "Tên danh mục",
+      title: "Tên brand",
       dataIndex: "title",
       key: "title",
     },
@@ -89,6 +91,18 @@ const CategoryListPage = () => {
       title: "Slug",
       dataIndex: "slug",
       key: "slug",
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (url) => url ? <img src={url} alt="brand" style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6 }} /> : null,
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => status === 1 ? "Hiển thị" : "Ẩn",
     },
     {
       title: "Ngày tạo",
@@ -109,7 +123,7 @@ const CategoryListPage = () => {
         <Space>
           <Button type="link" onClick={() => openModal(record)}>Sửa</Button>
           <Popconfirm
-            title="Bạn có chắc muốn xóa danh mục này?"
+            title="Bạn có chắc muốn xóa brand này?"
             onConfirm={() => handleDelete(record._id)}
             okText="Xóa"
             cancelText="Hủy"
@@ -123,30 +137,30 @@ const CategoryListPage = () => {
 
   return (
     <div style={{ maxWidth: 900, margin: "40px auto" }}>
-      <h2>Quản lý danh mục</h2>
+      <h2>Quản lý brand</h2>
       <Button type="primary" onClick={() => openModal()} style={{ marginBottom: 16 }}>
-        Thêm danh mục
+        Thêm brand
       </Button>
       <Table
         columns={columns}
-        dataSource={categories}
+        dataSource={brands}
         rowKey="_id"
         loading={loading}
         bordered
       />
       <Modal
-        title={editingCategory ? "Sửa danh mục" : "Thêm danh mục"}
+        title={editingBrand ? "Sửa brand" : "Thêm brand"}
         open={modalVisible}
         onOk={handleOk}
-        onCancel={() => { setModalVisible(false); setEditingCategory(null); }}
-        okText={editingCategory ? "Lưu" : "Thêm"}
+        onCancel={() => { setModalVisible(false); setEditingBrand(null); }}
+        okText={editingBrand ? "Lưu" : "Thêm"}
         cancelText="Hủy"
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="Tên danh mục"
+            label="Tên brand"
             name="title"
-            rules={[{ required: true, message: "Vui lòng nhập tên danh mục" }]}
+            rules={[{ required: true, message: "Vui lòng nhập tên brand" }]}
           >
             <Input />
           </Form.Item>
@@ -164,10 +178,27 @@ const CategoryListPage = () => {
           >
             <Input />
           </Form.Item>
+          <Form.Item
+            label="Ảnh (URL)"
+            name="image"
+            rules={[{ required: true, message: "Vui lòng nhập link ảnh" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Trạng thái"
+            name="status"
+            rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+          >
+            <Select>
+              <Select.Option value={1}>Hiển thị</Select.Option>
+              <Select.Option value={0}>Ẩn</Select.Option>
+            </Select>
+          </Form.Item>
         </Form>
       </Modal>
     </div>
   );
 };
 
-export default CategoryListPage;
+export default BrandListPage; 

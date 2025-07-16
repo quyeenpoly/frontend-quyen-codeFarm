@@ -12,6 +12,8 @@ import BlogListPage from '../pages/admin/BlogListPage';
 import BlogFormPage from "../pages/admin/BlogFormPage";
 import ProductDetailPage from "../pages/admin/ProductDetail";
 import ProductsUpdatePage from "../pages/admin/ProductsEditPage";
+import SubCategoryListPage from "../pages/admin/SubCategoryListPage";
+import BrandListPage from "../pages/admin/BrandListPage";
 
 const adminRoutes = [
  { index: true, element: <DashBoardPage /> },
@@ -43,5 +45,9 @@ const adminRoutes = [
 	{ path: "blogs", element: <BlogListPage /> }, 
 	{ path: "blogs/edit/:id", element: <BlogFormPage /> },
 	{ path: "blogs/add", element: <BlogFormPage /> },
+
+	// * Sub-categories routes
+	{ path: "sub-categories", element: <SubCategoryListPage /> },
+	{ path: "brands", element: <BrandListPage /> },
 ];
 export default adminRoutes;
